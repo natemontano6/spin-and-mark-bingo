@@ -23,15 +23,28 @@ const BINGO_RANGES = {
 };
 
 const SPECIAL_SYMBOLS = ['🃏', '⭐', '💎', '🎯', '🔥'];
+const BULLSEYE_SYMBOL = '🎯';
+const GOLD_BULLSEYE_SYMBOL = '🟡🎯';
 
 export const SlotMachine = ({ onSpin, isSpinning, spinsRemaining }: SlotMachineProps) => {
   const [reelValues, setReelValues] = useState<(number | string)[]>([1, 16, 31, 46, 61]);
   const [animatingReels, setAnimatingReels] = useState<boolean[]>([false, false, false, false, false]);
 
   const generateRandomValue = (column: 'B' | 'I' | 'N' | 'G' | 'O'): number | string => {
-    // 10% chance for special symbol
-    if (Math.random() < 0.1) {
-      return SPECIAL_SYMBOLS[Math.floor(Math.random() * SPECIAL_SYMBOLS.length)];
+    const rand = Math.random();
+    
+    // 2% chance for gold bullseye
+    if (rand < 0.02) {
+      return GOLD_BULLSEYE_SYMBOL;
+    }
+    // 3% chance for regular bullseye
+    else if (rand < 0.05) {
+      return BULLSEYE_SYMBOL;
+    }
+    // 5% chance for other special symbols
+    else if (rand < 0.1) {
+      const otherSymbols = SPECIAL_SYMBOLS.filter(s => s !== BULLSEYE_SYMBOL);
+      return otherSymbols[Math.floor(Math.random() * otherSymbols.length)];
     }
     
     const range = BINGO_RANGES[column];

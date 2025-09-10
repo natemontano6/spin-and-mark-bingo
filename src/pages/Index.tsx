@@ -34,6 +34,11 @@ const Index = () => {
   const [isSpinning, setIsSpinning] = useState(false);
   const [winningCells, setWinningCells] = useState<Set<string>>(new Set());
   const [maxSpins] = useState(12);
+  const [manualSelectionMode, setManualSelectionMode] = useState<{
+    active: boolean;
+    type: 'column' | 'any';
+    column?: 'B' | 'I' | 'N' | 'G' | 'O';
+  }>({ active: false, type: 'any' });
 
   // Generate a new bingo card
   const generateBingoCard = useCallback(() => {
@@ -76,6 +81,7 @@ const Index = () => {
     setMatches(0);
     setCompletedLines(0);
     setWinningCells(new Set());
+    setManualSelectionMode({ active: false, type: 'any' });
     toast("New bingo card generated! 🎯");
   }, []);
 
@@ -160,9 +166,25 @@ const Index = () => {
           }
         }
       } else if (result.isSpecial) {
-        // Special symbols give bonus points
-        setScore(prev => prev + 500);
-        toast(`Special symbol! ${result.value} +500 points! ✨`);
+        // Handle bullseyes
+        if (result.value === '🎯') {
+          setManualSelectionMode({ 
+            active: true, 
+            type: 'column', 
+            column: result.column 
+          });
+          toast(`🎯 Bullseye! Click any unmarked ${result.column} cell to mark it!`);
+        } else if (result.value === '🟡🎯') {
+          setManualSelectionMode({ 
+            active: true, 
+            type: 'any' 
+          });
+          toast(`🟡🎯 GOLD BULLSEYE! Click any unmarked cell to mark it!`);
+        } else {
+          // Other special symbols give bonus points
+          setScore(prev => prev + 500);
+          toast(`Special symbol! ${result.value} +500 points! ✨`);
+        }
       }
     });
 
@@ -184,6 +206,38 @@ const Index = () => {
       toast(`⚠️ Only ${maxSpins - newSpinCount} spin${maxSpins - newSpinCount === 1 ? '' : 's'} remaining!`);
     }
   }, [bingoCard, checkWinningPatterns, spins, maxSpins]);
+
+  // Handle manual cell selection
+  const handleCellClick = useCallback((row: number, col: number) => {
+    if (!manualSelectionMode.active) return;
+    
+    const cell = bingoCard[row][col];
+    if (cell.marked) {
+      toast("Cell already marked!");
+      return;
+    }
+    
+    // Check if selection is valid based on mode
+    if (manualSelectionMode.type === 'column' && cell.column !== manualSelectionMode.column) {
+      toast(`Can only select ${manualSelectionMode.column} column cells!`);
+      return;
+    }
+    
+    // Mark the cell
+    const updatedCard = [...bingoCard];
+    updatedCard[row][col].marked = true;
+    setBingoCard(updatedCard);
+    setMatches(prev => prev + 1);
+    setScore(prev => prev + 100);
+    
+    // Clear manual selection mode
+    setManualSelectionMode({ active: false, type: 'any' });
+    
+    toast(`${cell.column}${cell.number} marked manually! 🎯`);
+    
+    // Check for winning patterns
+    setTimeout(() => checkWinningPatterns(updatedCard), 300);
+  }, [bingoCard, manualSelectionMode, checkWinningPatterns]);
 
   const handleSpin = () => {
     if (spins >= maxSpins) {
@@ -218,10 +272,23 @@ const Index = () => {
           maxSpins={maxSpins}
         />
 
+        {/* Manual Selection Instruction */}
+        {manualSelectionMode.active && (
+          <div className="bg-accent/20 border border-accent rounded-lg p-4 text-center">
+            <p className="text-accent font-bold">
+              {manualSelectionMode.type === 'column' 
+                ? `🎯 Click any unmarked ${manualSelectionMode.column} cell to mark it!`
+                : `🟡🎯 Click any unmarked cell to mark it!`
+              }
+            </p>
+          </div>
+        )}
+
         {/* Bingo Card */}
         <BingoCard 
           card={bingoCard}
           winningCells={winningCells}
+          onCellClick={handleCellClick}
         />
 
         {/* Slot Machine */}

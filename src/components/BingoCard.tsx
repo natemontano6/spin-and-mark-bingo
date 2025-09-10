@@ -41,27 +41,30 @@ export const BingoCard = ({ card, onCellClick, winningCells = new Set() }: Bingo
                 key={cellKey}
                 onClick={() => onCellClick?.(rowIndex, colIndex)}
                 className={cn(
-                  "h-14 flex items-center justify-center rounded-lg font-semibold text-lg border-2 transition-all duration-300",
-                  "bg-gradient-to-br from-muted to-slate-700 border-border text-foreground",
-                  "hover:scale-105 cursor-pointer",
-                  cell.marked && "bingo-cell marked",
-                  isWinning && "winner-glow"
+                  "h-14 flex items-center justify-center rounded-lg font-semibold text-lg border-2 transition-all duration-300 relative overflow-hidden",
+                  cell.marked 
+                    ? "bg-gradient-to-br from-secondary via-accent to-secondary border-accent shadow-lg scale-95" 
+                    : "bg-gradient-to-br from-muted to-slate-700 border-border text-foreground hover:scale-105 cursor-pointer",
+                  isWinning && "winner-glow ring-4 ring-accent animate-pulse"
                 )}
               >
                 {/* Center cell is FREE */}
                 {rowIndex === 2 && colIndex === 2 ? (
-                  <span className="text-xs font-bold text-secondary">FREE</span>
+                  cell.marked ? (
+                    <div className="text-2xl text-primary-foreground">✓</div>
+                  ) : (
+                    <span className="text-xs font-bold text-secondary">FREE</span>
+                  )
                 ) : (
-                  <span>{cell.number}</span>
-                )}
-                
-                {/* Marked overlay */}
-                {cell.marked && (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-8 h-8 rounded-full bg-secondary text-accent-foreground flex items-center justify-center font-bold text-sm">
-                      ✓
-                    </div>
-                  </div>
+                  <>
+                    {/* Show number only if not marked */}
+                    {!cell.marked && <span>{cell.number}</span>}
+                    
+                    {/* Show checkmark if marked */}
+                    {cell.marked && (
+                      <div className="text-2xl text-primary-foreground font-bold">✓</div>
+                    )}
+                  </>
                 )}
               </div>
             );
