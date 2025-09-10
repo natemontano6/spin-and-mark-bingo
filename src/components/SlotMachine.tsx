@@ -11,6 +11,7 @@ interface SlotResult {
 interface SlotMachineProps {
   onSpin: (results: SlotResult[]) => void;
   isSpinning: boolean;
+  spinsRemaining: number;
 }
 
 const BINGO_RANGES = {
@@ -23,7 +24,7 @@ const BINGO_RANGES = {
 
 const SPECIAL_SYMBOLS = ['🃏', '⭐', '💎', '🎯', '🔥'];
 
-export const SlotMachine = ({ onSpin, isSpinning }: SlotMachineProps) => {
+export const SlotMachine = ({ onSpin, isSpinning, spinsRemaining }: SlotMachineProps) => {
   const [reelValues, setReelValues] = useState<(number | string)[]>([1, 16, 31, 46, 61]);
   const [animatingReels, setAnimatingReels] = useState<boolean[]>([false, false, false, false, false]);
 
@@ -121,10 +122,15 @@ export const SlotMachine = ({ onSpin, isSpinning }: SlotMachineProps) => {
       {/* Spin Button */}
       <Button
         onClick={handleSpin}
-        disabled={isSpinning}
-        className="w-full h-14 text-xl font-bold bg-gradient-to-r from-primary to-primary-glow hover:from-primary-glow hover:to-primary disabled:opacity-50 casino-glow"
+        disabled={isSpinning || spinsRemaining <= 0}
+        className={cn(
+          "w-full h-14 text-xl font-bold disabled:opacity-50 casino-glow",
+          spinsRemaining <= 0 
+            ? "bg-gradient-to-r from-destructive to-red-600" 
+            : "bg-gradient-to-r from-primary to-primary-glow hover:from-primary-glow hover:to-primary"
+        )}
       >
-        {isSpinning ? "SPINNING..." : "🎰 SPIN! 🎰"}
+        {isSpinning ? "SPINNING..." : spinsRemaining <= 0 ? "NO SPINS LEFT!" : "🎰 SPIN! 🎰"}
       </Button>
     </div>
   );

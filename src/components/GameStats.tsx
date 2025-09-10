@@ -6,12 +6,21 @@ interface GameStatsProps {
   spins: number;
   matches: number;
   completedLines: number;
+  maxSpins?: number;
 }
 
-export const GameStats = ({ score, spins, matches, completedLines }: GameStatsProps) => {
+export const GameStats = ({ score, spins, matches, completedLines, maxSpins = 12 }: GameStatsProps) => {
+  const remainingSpins = maxSpins - spins;
+  const isLowSpins = remainingSpins <= 2 && remainingSpins > 0;
+  const isNoSpins = remainingSpins <= 0;
+
   const stats = [
     { label: "Score", value: score, color: "text-secondary" },
-    { label: "Spins", value: spins, color: "text-foreground" },
+    { 
+      label: "Spins Left", 
+      value: remainingSpins, 
+      color: isNoSpins ? "text-destructive" : isLowSpins ? "text-yellow-500" : "text-foreground" 
+    },
     { label: "Matches", value: matches, color: "text-casino-green" },
     { label: "Lines", value: completedLines, color: "text-accent" }
   ];

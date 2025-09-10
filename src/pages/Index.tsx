@@ -33,6 +33,7 @@ const Index = () => {
   const [completedLines, setCompletedLines] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
   const [winningCells, setWinningCells] = useState<Set<string>>(new Set());
+  const [maxSpins] = useState(12);
 
   // Generate a new bingo card
   const generateBingoCard = useCallback(() => {
@@ -141,7 +142,8 @@ const Index = () => {
   // Handle slot machine results
   const handleSlotResult = useCallback((results: SlotResult[]) => {
     setIsSpinning(false);
-    setSpins(prev => prev + 1);
+    const newSpinCount = spins + 1;
+    setSpins(newSpinCount);
     
     let newMatches = 0;
     const updatedCard = [...bingoCard];
@@ -172,9 +174,22 @@ const Index = () => {
       // Check for winning patterns after a short delay
       setTimeout(() => checkWinningPatterns(updatedCard), 300);
     }
-  }, [bingoCard, checkWinningPatterns]);
+
+    // Check if game is over
+    if (newSpinCount >= maxSpins) {
+      setTimeout(() => {
+        toast("Game Over! No more spins remaining. Start a new game! 🎮");
+      }, 1000);
+    } else if (newSpinCount >= maxSpins - 2) {
+      toast(`⚠️ Only ${maxSpins - newSpinCount} spin${maxSpins - newSpinCount === 1 ? '' : 's'} remaining!`);
+    }
+  }, [bingoCard, checkWinningPatterns, spins, maxSpins]);
 
   const handleSpin = () => {
+    if (spins >= maxSpins) {
+      toast("No spins remaining! Start a new game! 🎮");
+      return;
+    }
     setIsSpinning(true);
   };
 
@@ -200,6 +215,7 @@ const Index = () => {
           spins={spins}
           matches={matches}
           completedLines={completedLines}
+          maxSpins={maxSpins}
         />
 
         {/* Bingo Card */}
@@ -212,6 +228,7 @@ const Index = () => {
         <SlotMachine 
           onSpin={handleSlotResult}
           isSpinning={isSpinning}
+          spinsRemaining={maxSpins - spins}
         />
 
         {/* New Game Button */}
