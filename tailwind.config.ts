@@ -22,6 +22,7 @@ export default {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
+          glow: "hsl(var(--primary-glow))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -47,6 +48,16 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        casino: {
+          green: "hsl(var(--casino-green))",
+          blue: "hsl(var(--casino-blue))",
+        },
+        winner: {
+          glow: "hsl(var(--winner-glow))",
+        },
+        slot: {
+          reel: "hsl(var(--slot-reel))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -65,25 +76,37 @@ export default {
       },
       keyframes: {
         "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
+        "pulse-glow": {
+          "0%": { boxShadow: "var(--shadow-glow)" },
+          "100%": { boxShadow: "var(--shadow-win)" },
+        },
+        "match-bounce": {
+          "0%, 100%": { transform: "scale(1)" },
+          "50%": { transform: "scale(1.1)" },
+        },
+        "slot-spin": {
+          "0%": { transform: "translateY(0)" },
+          "100%": { transform: "translateY(-100%)" },
+        },
+        "win-sweep": {
+          "0%, 100%": { opacity: "0", transform: "translateX(-100%)" },
+          "50%": { opacity: "1", transform: "translateX(100%)" },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "pulse-glow": "pulse-glow 1.5s ease-in-out infinite alternate",
+        "match-bounce": "match-bounce 0.6s ease-out",
+        "slot-spin": "slot-spin 1s linear infinite",
+        "win-sweep": "win-sweep 2s ease-in-out infinite",
       },
     },
   },

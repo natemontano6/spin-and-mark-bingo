@@ -2,41 +2,62 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Casino Bingo Game Design System - All colors MUST be HSL */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Casino Theme Colors */
+    --background: 220 26% 6%;
+    --foreground: 45 100% 90%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 220 20% 12%;
+    --card-foreground: 45 100% 90%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 220 20% 12%;
+    --popover-foreground: 45 100% 90%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Casino Red Primary */
+    --primary: 0 70% 45%;
+    --primary-foreground: 45 100% 95%;
+    --primary-glow: 0 70% 55%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Gold Secondary */
+    --secondary: 45 95% 50%;
+    --secondary-foreground: 220 26% 6%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 220 15% 20%;
+    --muted-foreground: 45 50% 70%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Casino Gold Accent */
+    --accent: 45 95% 60%;
+    --accent-foreground: 220 26% 6%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 220 15% 25%;
+    --input: 220 15% 15%;
+    --ring: 45 95% 60%;
 
-    --radius: 0.5rem;
+    /* Casino Specific Colors */
+    --casino-green: 120 60% 40%;
+    --casino-blue: 220 80% 55%;
+    --winner-glow: 45 100% 70%;
+    --slot-reel: 220 15% 8%;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+    --gradient-gold: linear-gradient(135deg, hsl(var(--secondary)), hsl(var(--accent)));
+    --gradient-win: linear-gradient(45deg, hsl(var(--winner-glow)), hsl(var(--secondary)));
+    --gradient-card: linear-gradient(145deg, hsl(var(--card)), hsl(220 15% 15%));
+
+    /* Shadows & Effects */
+    --shadow-casino: 0 10px 30px -5px hsl(var(--primary) / 0.3);
+    --shadow-gold: 0 5px 20px -3px hsl(var(--secondary) / 0.4);
+    --shadow-glow: 0 0 30px hsl(var(--accent) / 0.5);
+    --shadow-win: 0 0 40px hsl(var(--winner-glow) / 0.6);
+
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
 
@@ -102,4 +123,65 @@ All colors MUST be HSL.
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Casino Game Animations & Effects */
+@layer utilities {
+  .casino-glow {
+    box-shadow: var(--shadow-glow);
+  }
+  
+  .winner-glow {
+    box-shadow: var(--shadow-win);
+    animation: pulse-glow 1.5s ease-in-out infinite alternate;
+  }
+  
+  .bingo-cell {
+    @apply relative transition-all duration-300 cursor-pointer;
+  }
+  
+  .bingo-cell.marked {
+    @apply bg-gradient-to-br from-secondary to-accent text-accent-foreground;
+    box-shadow: var(--shadow-gold);
+    transform: scale(0.95);
+  }
+  
+  .bingo-cell.matched {
+    animation: match-bounce 0.6s ease-out;
+  }
+  
+  .slot-reel {
+    @apply bg-gradient-to-b from-slate-800 to-slate-900 border-2 border-border rounded-lg;
+    background: linear-gradient(145deg, hsl(var(--slot-reel)), hsl(220 10% 12%));
+  }
+  
+  .spinning {
+    animation: slot-spin 1s linear infinite;
+  }
+  
+  .win-line {
+    @apply absolute inset-0 pointer-events-none;
+    background: linear-gradient(90deg, transparent, hsl(var(--winner-glow) / 0.3), transparent);
+    animation: win-sweep 2s ease-in-out infinite;
+  }
+}
+
+@keyframes pulse-glow {
+  0% { box-shadow: var(--shadow-glow); }
+  100% { box-shadow: var(--shadow-win); }
+}
+
+@keyframes match-bounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+@keyframes slot-spin {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-100%); }
+}
+
+@keyframes win-sweep {
+  0%, 100% { opacity: 0; transform: translateX(-100%); }
+  50% { opacity: 1; transform: translateX(100%); }
 }
